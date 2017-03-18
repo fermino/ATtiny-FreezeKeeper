@@ -1,6 +1,6 @@
 #include "TempAlarmModule.h"
 
-	TempAlarmModule::TempAlarmModule(LiquidCrystal_I2C* L, OneWireSwitches<SWITCHES_AMOUNT, SWITCHES_INPUT_PIN>* S)
+	TempAlarmModule::TempAlarmModule(LCD_CLASS* L, OneWireSwitches<SWITCHES_AMOUNT, SWITCHES_INPUT_PIN>* S)
 	{
 		LCD = L;
 		Switches = S;

@@ -19,9 +19,14 @@
 
 	#include "Configuration.h"
 
- 	// I2C and LCD libs
- 	#include <TinyWireM.h>
-	#include <LiquidCrystal_I2C.h>
+ 	// LCD libs
+ 	#ifndef USE_GROVE_LCD
+ 		#include <TinyWireM.h>
+		#include <LiquidCrystal_I2C.h>
+	#else
+		#include <SerialLCD.h>
+		#include <SoftwareSerial.h>
+	#endif
 
 	// One analog input, a lot of switches :P
 	#include <OneWireSwitches.h>
@@ -30,7 +35,12 @@
 	#include "Module_Temperature.h"
 
 	// LCD
-	LiquidCrystal_I2C LCD(LCD_I2C_ADDRESS, LCD_COLUMNS, LCD_ROWS);
+	#ifndef USE_GROVE_LCD
+		//LiquidCrystal_I2C LCD(LCD_I2C_ADDRESS, LCD_COLUMNS, LCD_ROWS);
+	#else
+		// Same pins as I2C, #0 is TX, #2 is RX
+		SerialLCD LCD(0, 2);
+	#endif
 
 	// OneWireSwitches
 	static const uint32_t SwitchesR1[SWITCHES_AMOUNT] SWITCHES_R1;
@@ -44,7 +54,11 @@
 	{
 		// I2C interface and LCD init
 
-		LCD.init();
+		#ifndef USE_GROVE_LCD
+			LCD.init();
+		#else
+			LCD.begin();
+		#endif
 
 		#ifdef LCD_BACKLIGHT_ON
 			LCD.backlight();

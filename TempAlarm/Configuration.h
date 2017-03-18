@@ -7,6 +7,9 @@
 	 * __ ADD INFO
 	 */
 
+		// Comment to use an HD47780 LCD w/ I2C backpack
+		#define USE_GROVE_LCD
+
 		// To do: PWM output?
 		// Refer to the datasheet or tiny's pinout if you want to change it. 
 		// PB1 is digital output 1
@@ -28,12 +31,13 @@
 	 * in the firmware, you can change them if you want :)
 	 */
 
-		#define LCD_I2C_ADDRESS 0x27
+		// If you are using an I2C LCD, this must be configured
+		//#define LCD_I2C_ADDRESS 0x27
 
-		#define LCD_COLUMNS 20
-		#define LCD_ROWS 4
+		#define LCD_COLUMNS 16
+		#define LCD_ROWS 2
 
-		// Comment to disable+
+		// Comment to disable
 		#define LCD_BACKLIGHT_ON
 
 	/**

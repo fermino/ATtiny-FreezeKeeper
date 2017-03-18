@@ -7,15 +7,15 @@
 
 	#include "Module_Temperature.h"
 
-	TemperatureAlarm::TemperatureAlarm(LiquidCrystal_I2C* L, OneWireSwitches<SWITCHES_AMOUNT, SWITCHES_INPUT_PIN>* S)
+	TemperatureAlarm::TemperatureAlarm(LCD_CLASS* L, OneWireSwitches<SWITCHES_AMOUNT, SWITCHES_INPUT_PIN>* S)
 	: TempAlarmModule(L, S)
 	{}
 
 	void TemperatureAlarm::init()
 	{
 		// Create characters
-		LCD->createChar(TEMPERATURE_DIRECTION_UP_CHAR_INDEX, Temperature_DirectionUpChar);
-		LCD->createChar(TEMPERATURE_DIRECTION_DOWN_CHAR_INDEX, Temperature_DirectionDownChar);
+		//LCD->createChar(TEMPERATURE_DIRECTION_UP_CHAR_INDEX, Temperature_DirectionUpChar);
+		//LCD->createChar(TEMPERATURE_DIRECTION_DOWN_CHAR_INDEX, Temperature_DirectionDownChar);
 
 		// Print template
 		LCD->setCursor(0, 1);
