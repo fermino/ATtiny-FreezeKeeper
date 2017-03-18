@@ -1,6 +1,4 @@
-	#include "config/RTC.h"
 	#include "config/Temperature.h"
-	#include "config/Timer.h"
 
 	/**
 	 * TempAlarm v1.0

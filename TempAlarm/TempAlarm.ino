@@ -27,9 +27,7 @@
 	#include <OneWireSwitches.h>
 	
 	// Modules
-	#include "Module_RTC.h"
 	#include "Module_Temperature.h"
-	#include "Module_Timer.h"
 
 	// LCD
 	LiquidCrystal_I2C LCD(LCD_I2C_ADDRESS, LCD_COLUMNS, LCD_ROWS);
@@ -40,9 +38,7 @@
 
 	// Modules
 
-	RTCAlarm M_RTC(&LCD, &Switches);
 	TemperatureAlarm M_Temperature(&LCD, &Switches);
-	TimerAlarm M_Timer(&LCD, &Switches);
 
 	void setup()
 	{
@@ -62,17 +58,13 @@
 
 		// Init modules
 
-		M_RTC.init();
 		M_Temperature.init();
-		M_Timer.init();
 
 		for(;;)
 		{
-			M_RTC.loop();
 			M_Temperature.loop();
-			M_Timer.loop();
 
-			setAlarmStatus(/*M_RTC.isAlarmOn() || */ M_Temperature.isAlarmOn() || M_Timer.isAlarmOn());
+			setAlarmStatus(M_Temperature.isAlarmOn());
 		}
 	}
 
