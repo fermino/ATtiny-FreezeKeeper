@@ -13,15 +13,30 @@
 
 	void TemperatureAlarm::init()
 	{
-		// Create characters
-		//LCD->createChar(TEMPERATURE_DIRECTION_UP_CHAR_INDEX, Temperature_DirectionUpChar);
-		//LCD->createChar(TEMPERATURE_DIRECTION_DOWN_CHAR_INDEX, Temperature_DirectionDownChar);
-
 		// Print template
-		LCD->setCursor(0, 1);
-		LCD->print("Sens:");
 
-		UpdateDirection();
+		for(uint8_t i = 0; i < TEMPERATURE_SENSOR_AMOUNT; i++)
+		{
+			float r = 10.4f;
+			LCD->setCursor(0, i);
+			LCD->print('#');
+			LCD->print((uint32_t) i + 1, DEC);
+			LCD->print(": ");
+		}
+
+		for(uint8_t i = 0; i < TEMPERATURE_SENSOR_AMOUNT; )
+		{
+			// If there are no devices left in the bus, stop 
+			if(!OW.search(SensorAddress[i]))
+				break;
+
+			// If the device is a recognized one (temp sensor), keep counting
+			if(SensorAddress[i][0] == 0x10 || SensorAddress[i][0] == 0x28)
+				i++;
+		}
+
+		
+/*		UpdateDirection();
 
 		// Find sensor's address
 		OW.search(SensorAddress);
@@ -34,7 +49,7 @@
 
 		DirectionUp = eeprom_read_byte(TEMPERATURE_EEPROM_ADDRESS_DIRECTION);
 		if(DirectionUp != false && DirectionUp != true)
-			DirectionUp = true;
+			DirectionUp = true;*/
 	}
 
 	void TemperatureAlarm::loop()
@@ -47,7 +62,7 @@
 
 			UpdateTemperature();
 		}
-		if((millis() - UpdateStatus_StartedAt) >= TEMPERATURE_STATUS_UPDATE_DELAY)
+		/*if((millis() - UpdateStatus_StartedAt) >= TEMPERATURE_STATUS_UPDATE_DELAY)
 		{
 			UpdateStatus_StartedAt = millis();
 
@@ -101,82 +116,61 @@
 			LCD->print(' ');
 		LCD->print(Threshold);
 		LCD->print(TEMPERATURE_DEGREE_CHAR);
-		LCD->print(' ');
+		LCD->print(' ');*/
 	}
 
 	void TemperatureAlarm::UpdateTemperature()
 	{
-		LCD->setCursor(5, 1);
-
-		int8_t Temperature = -127;
-		uint8_t DecimalPart = 0;
-
-		// If the found (or not) address is a recognized one
-		if(SensorAddress[0] == 0x10 || SensorAddress[0] == 0x28)
+		for(uint8_t i = 0; i < TEMPERATURE_SENSOR_AMOUNT; i++)
 		{
+			float Temperature = -127.0f;
+
 			if(OW.reset())
 			{
-				// This reads the temperature from the scratchpad (sensor's memory)
-				OW.select(SensorAddress);
+				// Select the device and read the scratchpad
+				OW.select(SensorAddress[i]);
 				OW.write(0xBE); // Read Scratchpad [BEh] command
 
-				// Read and process the temperature
 				uint8_t LSB = OW.read();
 
-				Temperature = (OW.read() << 4) | (LSB >> 4);
-				DecimalPart = (LSB & 0b00001111) * 0.625f;
+				Temperature = ((OW.read() << 8) | LSB); 
+				Temperature = Temperature / 16;
 
-				// Start another conversion; will be used in the next function call
-				OW.reset();
-				OW.select(SensorAddress);
-				OW.write(0x44); // Convert T [44h] command
+				if(OW.reset())
+				{
+					// Start another conversion; will be used in the next function call
+					OW.select(SensorAddress[i]);
+					OW.write(0x44); // Convert T [44h] command
+				}
+			}
+
+			LCD->setCursor(4, i);
+
+			if(Temperature != -127.0f)
+			{
+				if(Temperature >= 0.0f && Temperature < 100.0f)
+					LCD->print(' ');
+
+				LCD->print(Temperature, 1);
+				LCD->print(TEMPERATURE_DEGREE_CHAR);
+				LCD->print(' ');
+
+				/*
+					// If the temperature is above or below the given temperature, activate the alarm
+					if(Enabled && ((DirectionUp == 0 && Temperature <= Threshold) || (DirectionUp == 1 && Temperature >= Threshold)))
+						AlarmOn = true;
+					else
+						AlarmOn = false;
+				*/
+			}
+			else
+			{
+				LCD->print(" ----- ");
+
+				//if(Enabled)
+				//	AlarmOn = true;
 			}
 		}
-
-		if(Temperature != -127)
-		{
-			// Print it :P
-			if(Temperature >= 0 && Temperature < 100)
-				LCD->print(' ');
-			LCD->print(Temperature);
-			LCD->print('.');
-			LCD->print(DecimalPart);
-			LCD->print(TEMPERATURE_DEGREE_CHAR);
-			LCD->print(' ');
-
-			// If the temperature is above or below the given temperature, activate the alarm
-			if(Enabled && ((DirectionUp == 0 && Temperature <= Threshold) || (DirectionUp == 1 && Temperature >= Threshold)))
-				AlarmOn = true;
-			else
-				AlarmOn = false;
-		}
-		else
-		{
-			LCD->print(" ----- ");
-
-			if(Enabled)
-				AlarmOn = true;
-		}
-	}
-
-	void TemperatureAlarm::UpdateStatus()
-	{
-		LCD->setCursor(19, 1);
-		
-		if(Enabled)
-		{
-			LCD->print(CurrentStatusCharacter ? TEMPERATURE_ALARM_ENABLED_0_CHAR : TEMPERATURE_ALARM_ENABLED_1_CHAR);
-
-			CurrentStatusCharacter = !CurrentStatusCharacter;
-		}
-		else
-			LCD->print(TEMPERATURE_ALARM_DISABLED_CHAR);
-	}
-
-	void TemperatureAlarm::UpdateDirection()
-	{
-		LCD->setCursor(12, 1);
-		LCD->write(DirectionUp ? TEMPERATURE_DIRECTION_UP_CHAR_INDEX : TEMPERATURE_DIRECTION_DOWN_CHAR_INDEX);
 	}
 
 	bool TemperatureAlarm::isAlarmOn()

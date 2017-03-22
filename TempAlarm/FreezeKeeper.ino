@@ -35,11 +35,11 @@
 	#include "Module_Temperature.h"
 
 	// LCD
-	#ifndef USE_GROVE_LCD
-		//LiquidCrystal_I2C LCD(LCD_I2C_ADDRESS, LCD_COLUMNS, LCD_ROWS);
-	#else
+	#ifdef USE_GROVE_LCD
 		// Same pins as I2C, #0 is TX, #2 is RX
-		SerialLCD LCD(0, 2);
+		SerialLCD LCD(2, 0);
+	#else
+		LiquidCrystal_I2C LCD(LCD_I2C_ADDRESS, LCD_COLUMNS, LCD_ROWS);
 	#endif
 
 	// OneWireSwitches
@@ -54,10 +54,11 @@
 	{
 		// I2C interface and LCD init
 
-		#ifndef USE_GROVE_LCD
-			LCD.init();
-		#else
+		#ifdef USE_GROVE_LCD
+			delay(100);
 			LCD.begin();
+		#else
+			LCD.init();
 		#endif
 
 		#ifdef LCD_BACKLIGHT_ON

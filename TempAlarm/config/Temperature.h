@@ -13,9 +13,12 @@
 	 * It is connected through a OneWire bus. 
 	 */
 
+		// How many sensors are connected? Be sure to not exceed LCD_ROWS
+		#define TEMPERATURE_SENSOR_AMOUNT 2
+
 		// Between -127 and 127 (as Threshold is an 8-bit integer)
-		#define TEMPERATURE_HIGHEST_THRESHOLD 127
-		#define TEMPERATURE_LOWEST_THRESHOLD -20
+		#define TEMPERATURE_HIGHEST_THRESHOLD 50
+		#define TEMPERATURE_LOWEST_THRESHOLD -50
 		// Default threshold if the one stored in the EEPROM is not valid
 		#define TEMPERATURE_DEFAULT_THRESHOLD 20
 
@@ -24,40 +27,6 @@
 	 */
 
 		#define TEMPERATURE_DEGREE_CHAR ((char) 223)
-
-		#define TEMPERATURE_ALARM_ENABLED_0_CHAR '!'
-		#define TEMPERATURE_ALARM_ENABLED_1_CHAR ((char) 255) // A character full of black dots C:
-		
-		#define TEMPERATURE_ALARM_DISABLED_CHAR '-'
-	
-		#define TEMPERATURE_DIRECTION_UP_CHAR_INDEX 0
-		const uint8_t Temperature_DirectionUpChar[8]
-		{
-			0b00100,
-			0b01110,
-			0b11111,
-			0b11111,
-			0b00100,
-			0b00100,
-			0b00100,
-			0b00100
-		};
-
-		#define TEMPERATURE_DIRECTION_DOWN_CHAR_INDEX 1
-		const uint8_t Temperature_DirectionDownChar[8]
-		{
-			0b00100,
-			0b00100,
-			0b00100,
-			0b00100,
-			0b11111,
-			0b11111,
-			0b01110,
-			0b00100
-		};
-
-		// Some characters blink on the screen on certain situations
-		#define TEMPERATURE_STATUS_UPDATE_DELAY 500
 
 	/**
 	 * OneWireSwitches configuration
